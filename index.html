@@ -1,162 +1,143 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Love Tree</title>
-
-<link rel="stylesheet" type="text/css" href="./renxi/default.css" />
-
-<script src="./renxi/jquery.min.js"></script>
-<script src="./renxi/jscex.min.js"></script>
-<script src="./renxi/jscex-parser.js"></script>
-<script src="./renxi/jscex-jit.js"></script>
-<script src="./renxi/jscex-builderbase.min.js"></script>
-<script src="./renxi/jscex-async.min.js"></script>
-<script src="./renxi/jscex-async-powerpack.min.js"></script>
-<script src="./renxi/functions.js"></script>
-<script src="./renxi/love.js"></script>
+<meta charset="UTF-8">
+<title>Our Love Tree</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-.STYLE1 { color:#666; }
+body {
+  margin: 0;
+  background: #ffe;
+  font-family: "Segoe UI", Arial, sans-serif;
+  overflow: hidden;
+}
+
+#message {
+  position: absolute;
+  left: 60px;
+  top: 60px;
+  width: 420px;
+  color: #e60000;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+#timerBox {
+  position: absolute;
+  left: 60px;
+  bottom: 60px;
+  font-size: 28px;
+}
+
+#timerBox span {
+  color: #33aa33;
+}
+
+#timer {
+  margin-top: 10px;
+  font-size: 48px;
+  font-weight: bold;
+  color: #111;
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+}
 </style>
 </head>
 
 <body>
 
-<audio autoplay loop>
-  <source src="./renxi/renxi.mp3" type="audio/mp3" />
-</audio>
-
-<div id="main">
-  <div id="error">
-    This page uses HTML5. Your browser cannot display it properly.
-    Please use Chrome or Firefox.
-  </div>
-
-  <div id="wrap">
-
-    <div id="text">
-      <div id="code">
-        <font color="#FF0000">
-          <span class="say">My dear little flower, I love you, even though you can’t see my confession.</span><br />
-          <span class="say"></span><br />
-          <span class="say">I know I’m not good with sweet words, but I will prove everything with my actions.</span><br />
-          <span class="say"></span><br />
-          <span class="say">You said I talk too much — the more I care, the more I lose.</span><br />
-          <span class="say">Because I loved you too deeply, I lost you.</span><br />
-          <span class="say">Because I cared too much, you walked away.</span><br />
-          <span class="say">Even if you can’t see my confession, I still want to say what’s in my heart.</span><br />
-          <span class="say"></span><br />
-          <span class="say"><span class="space"></span>— From the one who loves you</span>
-        </font>
-      </div>
-    </div>
-
-    <div id="clock-box">
-      <span class="STYLE1"></span>
-      <font color="#33CC00">Dear Huahua, I’ve loved you</font>
-      <span class="STYLE1">for…</span>
-      <div id="clock"></div>
-    </div>
-
-    <canvas id="canvas" width="1100" height="680"></canvas>
-  </div>
+<div id="message">
+  My dear little flower, I love you — even if you can’t see this confession.<br><br>
+  I may not be good with sweet words, but I will prove everything with my actions.
 </div>
 
+<div id="timerBox">
+  <span>Dear Huahua, I’ve loved you for…</span>
+  <div id="timer"></div>
+</div>
+
+<canvas id="canvas" width="1100" height="680"></canvas>
+
 <script>
-(function () {
-  var canvas = $('#canvas');
+/* =====================
+   TIMER (1536 days ago)
+   ===================== */
+const startDate = new Date(Date.now() - 1536 * 24 * 60 * 60 * 1000);
 
-  if (!canvas[0].getContext) {
-    $("#error").show();
-    return;
-  }
+function updateTimer() {
+  let diff = Math.floor((Date.now() - startDate) / 1000);
+  const days = Math.floor(diff / 86400);
+  diff %= 86400;
+  const hours = Math.floor(diff / 3600);
+  diff %= 3600;
+  const minutes = Math.floor(diff / 60);
+  const seconds = diff % 60;
 
-  var width = canvas.width();
-  var height = canvas.height();
-  canvas.attr("width", width);
-  canvas.attr("height", height);
+  document.getElementById("timer").textContent =
+    `${days} Days ${hours.toString().padStart(2,"0")} Hours ` +
+    `${minutes.toString().padStart(2,"0")} Minutes ` +
+    `${seconds.toString().padStart(2,"0")} Seconds`;
+}
+setInterval(updateTimer, 1000);
+updateTimer();
 
-  var opts = {
-    seed: { x: width / 2 - 20, color: "rgb(190,26,37)", scale: 2 },
-    branch: [[535,680,570,250,500,200,30,100,[
-      [540,500,455,417,340,400,13,100,[[450,435,434,430,394,395,2,40]]],
-      [550,445,600,356,680,345,12,100,[[578,400,648,409,661,426,3,80]]],
-      [539,281,537,248,534,217,3,40],
-      [546,397,413,247,328,244,9,80,[
-        [427,286,383,253,371,205,2,40],
-        [498,345,435,315,395,330,4,60]
-      ]],
-      [546,357,608,252,678,221,6,100,[[590,293,646,277,648,271,2,80]]]
-    ]]],
-    bloom: { num:700, width:1080, height:650 },
-    footer: { width:1200, height:5, speed:10 }
-  };
+/* =====================
+   TREE + FALLING HEARTS
+   ===================== */
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-  var tree = new Tree(canvas[0], width, height, opts);
-  var seed = tree.seed;
-  var foot = tree.footer;
-  var hold = 1;
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
 
-  canvas.click(function (e) {
-    var o = canvas.offset();
-    if (seed.hover(e.pageX - o.left, e.pageY - o.top)) {
-      hold = 0;
-      canvas.unbind("click mousemove").removeClass('hand');
-    }
-  }).mousemove(function (e) {
-    var o = canvas.offset();
-    canvas.toggleClass('hand', seed.hover(e.pageX - o.left, e.pageY - o.top));
+// Tree trunk
+function drawTrunk() {
+  ctx.fillStyle = "#2b1b14";
+  ctx.fillRect(canvas.width - 300, canvas.height - 260, 40, 260);
+}
+
+// Falling hearts (leaves)
+const hearts = [];
+for (let i = 0; i < 180; i++) {
+  hearts.push({
+    x: canvas.width - 280 + Math.random() * 200 - 100,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 6 + 4,
+    speed: Math.random() * 0.6 + 0.3,
+    color: `hsl(${Math.random() * 360},80%,70%)`
   });
+}
 
-  var seedAnimate = eval(Jscex.compile("async", function () {
-    seed.draw();
-    while (hold) $await(Jscex.Async.sleep(10));
-    while (seed.canScale()) { seed.scale(0.95); $await(Jscex.Async.sleep(10)); }
-    while (seed.canMove()) { seed.move(0,2); foot.draw(); $await(Jscex.Async.sleep(10)); }
-  }));
+function drawHearts() {
+  hearts.forEach(h => {
+    ctx.beginPath();
+    ctx.fillStyle = h.color;
+    ctx.arc(h.x, h.y, h.r, 0, Math.PI * 2);
+    ctx.fill();
 
-  var growAnimate = eval(Jscex.compile("async", function () {
-    while (tree.canGrow()) { tree.grow(); $await(Jscex.Async.sleep(10)); }
-  }));
-
-  var flowAnimate = eval(Jscex.compile("async", function () {
-    while (tree.canFlower()) { tree.flower(2); $await(Jscex.Async.sleep(10)); }
-  }));
-
-  var jumpAnimate = eval(Jscex.compile("async", function () {
-    while (true) {
-      tree.ctx.clearRect(0,0,width,height);
-      tree.jump(); foot.draw();
-      $await(Jscex.Async.sleep(25));
+    h.y += h.speed;
+    if (h.y > canvas.height) {
+      h.y = -10;
+      h.x = canvas.width - 280 + Math.random() * 200 - 100;
     }
-  }));
+  });
+}
 
-  var textAnimate = eval(Jscex.compile("async", function () {
-
-    // EXACT: 1536 days ago from now
-    var together = new Date(Date.now() - 1536 * 24 * 60 * 60 * 1000);
-
-    $("#code").show().typewriter();
-    $("#clock-box").fadeIn(500);
-
-    while (true) {
-      timeElapse(together);
-      $await(Jscex.Async.sleep(1000));
-    }
-  }));
-
-  var runAsync = eval(Jscex.compile("async", function () {
-    $await(seedAnimate());
-    $await(growAnimate());
-    $await(flowAnimate());
-    textAnimate().start();
-    $await(jumpAnimate());
-  }));
-
-  runAsync().start();
-})();
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawTrunk();
+  drawHearts();
+  requestAnimationFrame(animate);
+}
+animate();
 </script>
 
 </body>
